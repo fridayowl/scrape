@@ -15,6 +15,13 @@ discount_tag = soup.find('div', class_='ud-clp-percent-discount')
 
 exp = soup.find('div', class_='generic-purchase-section--buy-box-main--2o6Au')
 print(exp)
+span_element = soup.find('span', class_='redeem-coupon--code-text--2HFA4')
+coupon_status ="not applied"
+if span_element and 'applied' in span_element.text:
+    print('Text "applied" found in span element.')
+    coupon_status="Applied"
+else:
+    print('Text "applied" not found in span element.')
 
 # Print the text inside the tag
 print(discount_tag)
