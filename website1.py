@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+import re
 from datetime import datetime, timedelta
 
 
@@ -9,7 +9,6 @@ url = 'https://999coursesale.com/freebie-courses-list.php?pd12=free-v5-ret-orig-
 # Make the request to the website and parse the HTML content
 response = requests.get(url)
 soup = BeautifulSoup(response.content, 'html.parser')
-print(response)
 # course_name = soup.select_one('h3.heading').text
 # expiry_date = soup.select_one('span.text2').text
 # 
@@ -26,36 +25,62 @@ count=0
 # Print the content of each span element
 for text2_span in text2_spans:
     date_str =text2_span.text
-    date_parts = date_str.split()
+    date_parts = date_str.split() 
+    # Given date parts
+    day_str =date_parts[0]
+    month_str = date_parts[1]
+    year_str = date_parts[2]
 
-    # convert the day number to an integer
-    day = int(date_parts[0][:-2])
+    # Convert day to integer
+    day = int(day_str[:-2])
 
-    # get the month abbreviation as a string
-    month_str = date_parts[1][:-1]
-    month = datetime.strptime(month_str, "%b").month
+    # Convert month to integer
+    months = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+              'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
+    month = months[month_str]
 
-    # get the year as an integer
-    year = int(date_parts[2])
+    # Convert year to integer
+    year = int(year_str)
 
-    # construct a datetime object from the parsed date components
-    formatted_date = datetime(year=year, month=month, day=day)
+    # Create a datetime object from the given date
+    dt = datetime(year, month, day)
 
-    #print(formatted_date)
-    delta_72_hours = timedelta(hours=72)
-
-    # get the current date and time as a datetime object
-    now = datetime.now()
-
-    # calculate the difference between the expiration date and the current date
-    time_difference = formatted_date - now
-
-    # check if the time difference is less than 72 hours
-    if time_difference < delta_72_hours:
-        #print("less than 72 hours!")
+    # Calculate the difference between the current time and the given datetime object
+    delta = datetime.now() - dt
+    # Check if the difference is less than 72 hours
+    if delta < timedelta(hours=72):
         count+=1
     else:
-        #print("more than 72 hours.")
         pass
-print(count)
+        #print('The given date is not less than 72 hours from now.')
+button = soup.find('div', {'class': 'button'})
 
+buttons = soup.find_all('div', {'class': 'button'})
+
+for button in buttons:
+    onclick_value = button.get('onclick')
+    if onclick_value:
+        # Extract the URL from the handleRedirect JavaScript function using a regular expression
+        url_match = re.search(r"handleRedirect\('([^']*)'", onclick_value)
+        if url_match:
+            url = url_match.group(1)
+            print(url)      
+print(count)
+divs = soup.find_all('div', {'class': 'mt-3 text-center'})
+
+for div in divs:
+    url=''
+    couponcode=''
+    link = div.find('a')
+    if link:
+        onclick_value = link.get('onclick')
+        if onclick_value:
+            url = onclick_value.split("'")[1]
+            span = div.find('span', {'class': 'w-100'})
+            if span:
+                text = span.text.strip()
+                couponcode=text
+                print(f"URL: {url}\nText: {text}\n")
+                fullurl=url+'?ranMID=39197&ranEAID=vWFcdslQDtg&ranSiteID=vWFcdslQDtg-GOO6ha9yKIzdo3cHApJ8IQ&LSNPUBID=vWFcdslQDtg&utm_source=aff-campaign&utm_medium=udemyads&couponCode='+couponcode
+                print(fullurl)
+ 
