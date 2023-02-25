@@ -4,6 +4,7 @@ import re
 from datetime import datetime, timedelta
 from scrapingbee import ScrapingBeeClient
 from bs4 import BeautifulSoup
+import time
 
 url = 'https://999coursesale.com/freebie-courses-list.php?pd12=free-v5-ret-orig-2-udemy-ans-no&orig_utm_content=&orig_utm_medium=&orig_utm_campaign=&utm_source=nonzu&_redir='
 
@@ -86,7 +87,7 @@ for div in divs:
                 print(fullurl)
                 client = ScrapingBeeClient(api_key='UVDRFJ0V9G6L6XU0UW8PW3WDP1PQG7IIBMWG4XUA08Z30P0TKT7WPXGHU1OE6HGVJOQWSG41GU52O7G9')
                 response = client.get(fullurl)
-
+                time.sleep(2)
                 print('Response HTTP Status Code: ', response.status_code)
                 #print('Response HTTP Response Body: ', response.content)
                 soup = BeautifulSoup(response.content, 'html.parser') 
@@ -115,4 +116,8 @@ for div in divs:
                 print(discount)
                 if coupon_status=="Applied" and discount == 100 :
                     print('Expiry date:', expiry_date)
-
+                    date_str = soup.find('div', {'class': 'last-update-date'}).text.split('Last updated ')[1]
+                    last_update_date = datetime.strptime(date_str, '%m/%Y').date()
+                    days_since_last_update = (datetime.now().date() - last_update_date).days
+                    print(f'Last update date: {last_update_date}')
+                    print(f'Days since last update: {days_since_last_update}')
