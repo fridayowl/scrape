@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from scrapingbee import ScrapingBeeClient
 from bs4 import BeautifulSoup
 import time
+import csv
 
 url = 'https://999coursesale.com/freebie-courses-list.php?pd12=free-v5-ret-orig-2-udemy-ans-no&orig_utm_content=&orig_utm_medium=&orig_utm_campaign=&utm_source=nonzu&_redir='
 
@@ -69,7 +70,14 @@ for button in buttons:
             print(url)      
 print(count)
 divs = soup.find_all('div', {'class': 'mt-3 text-center'})
+# CSV file name
+filename = "courses.csv"
 
+header = ['Course Name', 'Course URL', 'Coupon Code', 'Expiration Date']
+# Open the file in write mode and write the header
+with open('courses.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(header)
 for div in divs:
     url=''
     couponcode=''
@@ -116,8 +124,13 @@ for div in divs:
                 print(discount)
                 if coupon_status=="Applied" and discount == 100 :
                     print('Expiry date:', expiry_date)
+                    today = datetime.now().date()
+                    next_date = today + timedelta(days=int(expiry_date))
                     date_str = soup.find('div', {'class': 'last-update-date'}).text.split('Last updated ')[1]
                     last_update_date = datetime.strptime(date_str, '%m/%Y').date()
                     days_since_last_update = (datetime.now().date() - last_update_date).days
                     print(f'Last update date: {last_update_date}')
                     print(f'Days since last update: {days_since_last_update}')
+                    with open('courses.csv', 'a', newline='') as f:
+                        writer = csv.writer(f)
+                        writer.writerow([couponcode, fullurl, couponcode, expiry_date])
