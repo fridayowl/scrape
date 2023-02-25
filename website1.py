@@ -133,4 +133,4 @@ for div in divs:
                     print(f'Days since last update: {days_since_last_update}')
                     with open('courses.csv', 'a', newline='') as f:
                         writer = csv.writer(f)
-                        writer.writerow([couponcode, fullurl, couponcode, expiry_date])
+                        writer.writerow([couponcode, fullurl, couponcode, next_day])
