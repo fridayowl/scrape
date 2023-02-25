@@ -1,9 +1,10 @@
 from scrapingbee import ScrapingBeeClient
 from bs4 import BeautifulSoup
-import datetime
+from datetime import datetime
+import time
 client = ScrapingBeeClient(api_key='UVDRFJ0V9G6L6XU0UW8PW3WDP1PQG7IIBMWG4XUA08Z30P0TKT7WPXGHU1OE6HGVJOQWSG41GU52O7G9')
 response = client.get('https://www.udemy.com/course/css-crash-course-for-beginners-g/?ranMID=39197&ranEAID=vWFcdslQDtg&ranSiteID=vWFcdslQDtg-GOO6ha9yKIzdo3cHApJ8IQ&LSNPUBID=vWFcdslQDtg&utm_source=aff-campaign&utm_medium=udemyads&couponCode=398E44F4EAA96D4EBCC8')
-
+time.sleep(2)
 print('Response HTTP Status Code: ', response.status_code)
 #print('Response HTTP Response Body: ', response.content)
 soup = BeautifulSoup(response.content, 'html.parser') 
