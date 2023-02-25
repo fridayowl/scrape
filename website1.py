@@ -81,7 +81,7 @@ for div in divs:
             if span:
                 text = span.text.strip()
                 couponcode=text
-                print(f"URL: {url}\nText: {text}\n")
+                #print(f"URL: {url}\nText: {text}\n")
                 fullurl=url+'?ranMID=39197&ranEAID=vWFcdslQDtg&ranSiteID=vWFcdslQDtg-GOO6ha9yKIzdo3cHApJ8IQ&LSNPUBID=vWFcdslQDtg&utm_source=aff-campaign&utm_medium=udemyads&couponCode='+couponcode
                 print(fullurl)
                 client = ScrapingBeeClient(api_key='UVDRFJ0V9G6L6XU0UW8PW3WDP1PQG7IIBMWG4XUA08Z30P0TKT7WPXGHU1OE6HGVJOQWSG41GU52O7G9')
@@ -89,29 +89,30 @@ for div in divs:
 
                 print('Response HTTP Status Code: ', response.status_code)
                 #print('Response HTTP Response Body: ', response.content)
-                soup = BeautifulSoup(response.content, 'html.parser')
-                # find all text in the HTML content
-                discount_tags = soup.find_all(attrs={'class': lambda x: x and 'discount' in x})
-                for tag in discount_tags:
-                    #print(f"Attribute: {tag.attrs}, Class: {tag['class']}")
-                    pass
-                discount_tag = soup.find('div', class_='ud-clp-percent-discount')
-
-                exp = soup.find('div', class_='generic-purchase-section--buy-box-main--2o6Au')
-                #print(exp)
+                soup = BeautifulSoup(response.content, 'html.parser') 
                 span_element = soup.find('span', class_='redeem-coupon--code-text--2HFA4')
                 coupon_status ="not applied"
                 if span_element and 'applied' in span_element.text:
-                    print('Text "applied" found in span element.')
+                    #print('Text "applied" found in span element.')
                     coupon_status="Applied"
-                else:
-                    print('Text "applied" not found in span element.')
-                old_price_div = soup.find('div', attrs={'data-purpose': 'course-old-price-text'})
-                if old_price_div:
-                    print(old_price_div.text)
-                else:
-                    print('Old price div not found.')
-                # Print the text inside the tag
-                print(discount_tag)
-                 
+                discount ="0%"
+                try:
+                    discount_percent = soup.find('div', {'data-purpose': 'discount-percentage'}).get_text().strip()
+                except :
+                    discount_percent="0%"  
+                #print(discount_percent)
+                discount=0;
+                if "100%" in discount_percent:
+                    #print("Discount percentage contains 100%")
+                    discount=100 
+                #print(original_price)
+                try:
+                    expiry_date = soup.find('div', {'data-purpose': 'discount-expiration'}).text.strip().split()[0]
+                    #print(expiry_date)
+                except :
+                    expiry_date = "null"
+                print(coupon_status)
+                print(discount)
+                if coupon_status=="Applied" and discount == 100 :
+                    print('Expiry date:', expiry_date)
 
